@@ -94,6 +94,7 @@ instance Monad m => Monad (ListT m) where
             return Nothing
           Just (h1, t1) ->
             uncons $ k2 h1 <> (t1 >>= k2)
+  fail _ = inline mempty
 
 instance Monad m => MonadPlus (ListT m) where
   mzero = 
