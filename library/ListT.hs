@@ -13,6 +13,7 @@ module ListT
   toReverseList,
   traverse_,
   splitAt,
+  ListT.break,
   -- * Construction utilities
   cons,
   fromFoldable,
@@ -220,6 +221,20 @@ splitAt =
     _ -> \l -> 
       return ([], l)
 
+-- |
+-- Execute up to the production of the first value satisfying the predicate,
+-- returning the list of values not satisfying the predicate and the remainder
+-- stream (including the first non-satisfying value)
+{-# INLINABLE break #-}
+break :: Monad m => (a -> Bool) -> ListT m a -> m ([a], ListT m a)
+break p = go where
+  go l = uncons l >>= \case
+    Nothing -> return ([], mzero)
+    Just (h, t) -> if p h
+      then return ([], h `cons` t)
+      else do
+        (r1,r2) <- go t
+        return (h:r1, r2)
 
 -- * Construction
 -------------------------
